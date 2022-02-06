@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>$3Dmol Example</title>
+    <title>Ice</title>
     <link rel="icon" href="favicon.svg">
     <script src="https://3Dmol.csb.pitt.edu/build/3Dmol-min.js"></script>
     <script src="ice.js"></script>
@@ -27,16 +27,22 @@
         document.addEventListener('keypress', handleKeyPress);
         function handleKeyPress(event) {
             if (event.key == 's') {
-                n = n + 1;
-                console.log(n);
-                updateAtoms();
+                addLayer();
             }
             if (event.key == 'a') {
-                if (n > 1) {
-                    n = n - 1;
-                    console.log(n);
-                    updateAtoms();
-                }
+                removeLayer();
+            }
+        }
+        function addLayer() {
+            n = n + 1;
+            console.log(n);
+            updateAtoms();
+        }
+        function removeLayer() {
+            if (n > 1) {
+                n = n - 1;
+                console.log(n);
+                updateAtoms();
             }
         }
         function updateAtoms() {
@@ -82,7 +88,7 @@
 </head>
 
 <body>
-    <div id="gldiv" style="width: 100%; height: 80vh; margin: 0; padding: 0; border: 0;"></div>
+    <div id="gldiv" style="width: 100%; height: 85vh; margin: 0; padding: 0; border: 0;"></div>
 
     <hr style="margin: 0;">
 
@@ -94,9 +100,10 @@
     <input type="button" value="Perspective"
         onclick="glviewer.setProjection('perspective'); glviewer.render();"></input>
     <br>
-    Remove layer: "A"
-    <br>
-    Add layer: "S"
+    <input type="button" value="Remove layer (A)"
+        onclick="removeLayer();"></input>
+    <input type="button" value="Add layer (S)"
+        onclick="addLayer();"></input>
 </body>
 
 </html>
