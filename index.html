@@ -1,26 +1,102 @@
-<html >
+<!DOCTYPE html>
+<html>
+
 <head>
-  <meta charset="UTF-8">
-  <title>Three.js Start</title>
-      <link rel="stylesheet" href="css/style.css">
+    <title>$3Dmol Example</title>
+    <link rel="icon" href="favicon.svg">
+    <script src="https://3Dmol.csb.pitt.edu/build/3Dmol-min.js"></script>
+    <script src="ice.js"></script>
+
+
+    <style>
+        head,
+        body {
+            margin: 0;
+            border: 0;
+            padding: 0;
+            max-height: 100vh
+        }
+    </style>
+    <script>
+        var glviewer = null;
+
+        let n = 5;
+        let atoms = atomsDistanceLessThan(n);
+        let m = null;
+
+        document.addEventListener('keypress', handleKeyPress);
+        function handleKeyPress(event) {
+            if (event.key == 's') {
+                n = n + 1;
+                console.log(n);
+                updateAtoms();
+            }
+            if (event.key == 'a') {
+                if (n > 1) {
+                    n = n - 1;
+                    console.log(n);
+                    updateAtoms();
+                }
+            }
+        }
+        function updateAtoms() {
+            sa = glviewer.selectedAtoms({});
+            m.removeAtoms(sa);
+            atoms = atomsDistanceLessThan(n);
+            m.addAtoms(atoms);
+            m.setStyle({}, { sphere: {}, stick: {} });
+            glviewer.render();
+        }
+
+        $(document).ready(function () {
+
+
+
+            glviewer = $3Dmol.createViewer("gldiv", {
+                defaultcolors: $3Dmol.rasmolElementColors
+            });
+            glviewer.setBackgroundColor(0xffffff);
+
+            m = glviewer.addModel();
+
+            console.log(a);
+
+            // var atoms = a.map(oxy =>
+            //     ({ elem: 'O', x: oxy.x, y: oxy.y, z: oxy.z, bonds: a.neighborLocations(oxy) })
+            // );
+
+            m.addAtoms(atoms);
+            m.setStyle({}, { sphere: {}, stick: {} });
+
+            for (var i in atoms) {
+                var atom = atoms[i];
+                atom.clickable = true;
+            }
+
+            glviewer.zoomTo();
+            glviewer.render();
+
+
+        });
+    </script>
 </head>
- 
+
 <body>
- 
+    <div id="gldiv" style="width: 100%; height: 80vh; margin: 0; padding: 0; border: 0;"></div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r121/three.min.js" integrity="sha512-yNJzAsg5JyP91u+sLHlUDULMBd3hmEiVkYeeN1cQBKaLZ7EyT6oH2u5THNIRM2Fu6VKcZJv+F/QAp1h/qzy9Ow==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="js/Stats.js"></script>
-    <script src="js/TrackballControls.js"></script>
+    <hr style="margin: 0;">
 
-    <!--
-<script src="https://rawgit.com/mrdoob/three.js/master/build/three.min.js"></script>
-<script src="https://rawgit.com/mrdoob/stats.js/master/build/stats.min.js"></script>
-<script src='https://rawgit.com/mrdoob/three.js/master/examples/js/controls/TrackballControls.js'></script>
-
--->
-    <script src="js/positions.js"></script>
-    <script src="js/index.js"></script>
- 
+    <br>
+    <input type="button" value="Recenter" onclick="glviewer.zoomTo();"></input>
+    <br>
+    <input type="button" value="Orthographic"
+        onclick="glviewer.setProjection('orthographic'); glviewer.render();"></input>
+    <input type="button" value="Perspective"
+        onclick="glviewer.setProjection('perspective'); glviewer.render();"></input>
+    <br>
+    Remove layer: "A"
+    <br>
+    Add layer: "S"
 </body>
-</html>
 
+</html>
