@@ -50,7 +50,7 @@
             m.removeAtoms(sa);
             atoms = atomsDistanceLessThan(n);
             m.addAtoms(atoms);
-            m.setStyle({}, { sphere: {}, stick: {} });
+            m.setStyle({}, { sphere: {scale: 0.6}, stick: {radius: 0.15} });
             glviewer.render();
         }
 
@@ -71,13 +71,8 @@
             //     ({ elem: 'O', x: oxy.x, y: oxy.y, z: oxy.z, bonds: a.neighborLocations(oxy) })
             // );
 
-            m.addAtoms(atoms);
-            m.setStyle({}, { sphere: {}, stick: {} });
 
-            for (var i in atoms) {
-                var atom = atoms[i];
-                atom.clickable = true;
-            }
+            updateAtoms();
 
             glviewer.zoomTo();
             glviewer.render();

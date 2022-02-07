@@ -384,6 +384,7 @@ function atomsDistanceLessThan(n) {
             x: oxy.x, y: oxy.y, z: oxy.z,
             bonds: atomArray.neighborLocations(oxy),
             color: (oxy.graphDistance() % 2 ? "green" : "red"),
+            size: 2,
         })
     );
 }
