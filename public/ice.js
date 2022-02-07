@@ -167,6 +167,131 @@ class OxygenIh {
 }
 
 
+class OxygenIc {
+    static registry = {};
+    static distances = {};
+    static oxygensAtDistanceList = [];
+    static facetNormals = [
+        [2, 0, 0],
+        [0, 2, 0],
+        [0, 0, 2],
+        [1, 1, 1],
+        [-1, 1, 1],
+        [1, -1, 1],
+        [1, 1, -1],
+        // negatives:
+        [-2, 0, 0],
+        [0, -2, 0],
+        [0, 0, -2],
+        [-1, -1, -1],
+        [1, -1, -1],
+        [-1, 1, -1],
+        [-1, -1, 1],
+    ];
+    static skey(x, y, z) {
+        return x + "," + y + "," + z;
+    }
+    ikey() {
+        return this.constructor.skey(this.x, this.y, this.z);
+    }
+    static getInstance(x, y, z) {
+        const reg = this.registry;
+        const key = this.skey(x, y, z);
+        if (key in reg) {
+            return reg[key];
+        }
+        const pt = new this(x, y, z);
+        reg[key] = pt;
+        return pt;
+    }
+    constructor(x, y, z) {
+        this.x = x;
+        this.y = y;
+        this.z = z;
+        const s = x + y + z;
+        if (mod(s, 12) == 0) {
+            if (mod(x, 6) + mod(y, 6) + mod(z, 6)) {
+                throw new InvalidPointError(x, y, z);
+            }
+        } else if (mod(s, 12) == 3) {
+            if (mod(x - 3, 6) + mod(y - 3, 6) + mod(z - 3, 6)) {
+                throw new InvalidPointError(x, y, z);
+            }
+        } else {
+            throw new InvalidPointError(x, y, z);
+        }
+    };
+    neighbors() {
+        const x = this.x;
+        const y = this.y;
+        const z = this.z;
+        const s = x + y + z;
+        const cls = this.constructor
+        if (mod(s, 12) == 0) {
+            return [
+                cls.getInstance(x - 3, y - 3, z - 3),
+                cls.getInstance(x - 3, y + 3, z + 3),
+                cls.getInstance(x + 3, y - 3, z + 3),
+                cls.getInstance(x + 3, y + 3, z - 3),
+            ];
+        }
+        if (mod(s, 12) == 3) {
+            return [
+                cls.getInstance(x + 3, y + 3, z + 3),
+                cls.getInstance(x + 3, y - 3, z - 3),
+                cls.getInstance(x - 3, y + 3, z - 3),
+                cls.getInstance(x - 3, y - 3, z + 3),
+            ];
+        }
+        throw new Error("Inconsistent modulo 12");
+    }
+    graphDistance() {
+        const cls = this.constructor
+        const key = this.ikey();
+        if (key in cls.distances) {
+            return cls.distances[key];
+        }
+        const x = this.x;
+        const y = this.y;
+        const z = this.z;
+        const normals = this.constructor.facetNormals;
+        const dots = normals.map(n => n[0] * x + n[1] * y + n[2] * z);
+        // If not every element of dots is divisible by 3, then raise an error.
+        if (dots.some(d => mod(d, 3))) {
+            throw new Error("Inconsistent modulo 3");
+        }
+        const dot = Math.max(...dots) / 3;
+        const r = mod(dot, 4);
+        const q = (dot - r) / 4;
+        let res = 2 * q;
+        if (r >= 1) {
+            res++;
+        }
+        cls.distances[key] = res;
+        return res;
+    }
+    static getOxygensAtDistance(distance) {
+        const lst = this.oxygensAtDistanceList;
+        while (lst.length <= distance) {
+            const s = new Set();
+            if (lst.length == 0) {
+                s.add(this.getInstance(0, 0, 0));
+            } else {
+                for (const node of lst[lst.length - 1]) {
+                    for (const neighbor of node.neighbors()) {
+                        if (neighbor.graphDistance() == lst.length) {
+                            s.add(neighbor);
+                        }
+                    }
+                }
+            }
+            lst.push(s);
+        }
+        return lst[distance];
+    }
+}
+
+
 const OxygenArray = function(...array) {
     const self = Array.from(...array)
     index = {}
@@ -218,18 +343,20 @@ const OxygenArray = function(...array) {
 //     }
 // }
 
+let Oxygen = OxygenIh
+
 function* oxygensWithDistanceLessThan(distance) {
     for (const d of Array(distance).keys()) {
-        for (const oxygen of OxygenIh.getOxygensAtDistance(d)) {
+        for (const oxygen of Oxygen.getOxygensAtDistance(d)) {
             yield oxygen;
         }
     }
 }
 
 
-o = OxygenIh.getInstance(0, 0, 0);
+o = Oxygen.getInstance(0, 0, 0);
 n = o.neighbors()[0];
-o2 = OxygenIh.getInstance(-3, -3, -3)
+o2 = Oxygen.getInstance(-3, -3, -3)
 o2.graphDistance()
 console.log("Hello world")
 
@@ -238,7 +365,7 @@ newLayer = new Set();
 newLayer.add(o);
 const oxygenAtDistance = [newLayer];
 
-console.log(OxygenIh.getOxygensAtDistance(10).size);
+console.log(Oxygen.getOxygensAtDistance(10).size);
 
 const a0 = Array(...oxygensWithDistanceLessThan(8))
 

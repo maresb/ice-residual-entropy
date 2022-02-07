@@ -88,7 +88,7 @@
 </head>
 
 <body>
-    <div id="gldiv" style="width: 100%; height: 85vh; margin: 0; padding: 0; border: 0;"></div>
+    <div id="gldiv" style="width: 100%; height: 80vh; margin: 0; padding: 0; border: 0;"></div>
 
     <hr style="margin: 0;">
 
@@ -100,7 +100,12 @@
     <input type="button" value="Perspective"
         onclick="glviewer.setProjection('perspective'); glviewer.render();"></input>
     <br>
-    <input type="button" value="Remove layer (A)"
+    <input type="button" value="Ice Ih (normal hex)"
+        onclick="Oxygen=OxygenIh; updateAtoms();"></input>
+    <input type="button" value="Ice Ic (cubic)"
+        onclick="Oxygen=OxygenIc; updateAtoms();"></input>
+    <br>
+        <input type="button" value="Remove layer (A)"
         onclick="removeLayer();"></input>
     <input type="button" value="Add layer (S)"
         onclick="addLayer();"></input>
